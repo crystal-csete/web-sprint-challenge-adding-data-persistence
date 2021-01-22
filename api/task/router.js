@@ -8,7 +8,7 @@ const router = express.Router();
 
 // get all the Tasks from the database
 router.get("/", (req, res) => {
-    Tasks.getTasks()
+  Tasks.getTasks()
     .then((task) => {
       res.status(201).json(task);
     })
@@ -32,6 +32,5 @@ router.post("/", (req, res) => {
       res.status(500).json({ message: "Failed to create new task", err });
     });
 });
-
 
 module.exports = router;
