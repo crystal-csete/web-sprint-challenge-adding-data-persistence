@@ -1,20 +1,19 @@
-// build your `/api/resources` router here
+
 const express = require("express");
 
 const Resource = require("./model.js");
 const db = require("../../data/dbConfig.js");
-
 const router = express();
 
+
+
 // get all Resources from the database
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
     Resource.getResources()
     .then((resource) => {
       res.json(resource);
     })
-    .catch((error) => {
-      res.status(500).json({ message: "Failed to get the resource!", error });
-    });
+    .catch(next);
 });
 
 // add a Resource to the database
@@ -33,6 +32,13 @@ router.post('/', (req, res) => {
  .catch(error => {
    res.status(500).json({ message: 'Failed to add the Resource!', error })
  })
+})
+
+router.use((err, req, res, next) => {
+  const environment = process.env.NODE_ENV || 'development'
+  const message = environment === 'development' ? err.message : 'Something went wrong!'
+  res.status(500).json(message)
+  console.log(next)
 })
 
 

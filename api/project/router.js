@@ -1,4 +1,3 @@
-// build your `/api/projects` router here
 const express = require("express");
 
 const Project = require("./model.js");
@@ -7,18 +6,16 @@ const db = require("../../data/dbConfig.js");
 const router = express();
 
 // get all Project from the database
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
   Project.getProjects()
     .then((project) => {
       res.json(project);
     })
-    .catch((error) => {
-      res.status(500).json({ message: "Failed to get the Projects!", error });
-    });
+    .catch(next);
 });
 
 // post a Project to the database
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => {
   db("projects")
     .insert(req.body)
     .then((ids) => {
@@ -31,9 +28,15 @@ router.post("/", (req, res) => {
           res.status(201).json(project);
         });
     })
-    .catch((error) => {
-      res.status(500).json({ message: "Failed to add the Project!", error });
-    });
+    .catch(next);
+});
+
+router.use((err, req, res, next) => {
+  const environment = process.env.NODE_ENV || "development";
+  const message =
+    environment === "development" ? err.message : "Something went wrong!";
+  res.status(500).json(message);
+  console.log(next);
 });
 
 module.exports = router;
